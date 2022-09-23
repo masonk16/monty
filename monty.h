@@ -3,14 +3,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <string.h>
+#include <errno.h>
 
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
-extern int global_var;
+extern FILE *file_s;
+extern char *line_buf;
+extern int is_queue;
+
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
  * @n: integer
@@ -20,15 +19,16 @@ extern int global_var;
  * Description: doubly linked list node structure
  * for stack, queues, LIFO, FIFO Holberton project
  */
+
 typedef struct stack_s
 {
-        int n;
-        struct stack_s *prev;
-        struct stack_s *next;
+	int n;
+	struct stack_s *prev;
+	struct stack_s *next;
 } stack_t;
 
 /**
- * struct instruction_s - opcoode and its function
+ * struct instruction_s - opcode and its function
  * @opcode: the opcode
  * @f: function to handle the opcode
  *
@@ -37,13 +37,42 @@ typedef struct stack_s
  */
 typedef struct instruction_s
 {
-        char *opcode;
-        void (*f)(stack_t **stack, unsigned int line_number);
+	char *opcode;
+	void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-char * get_tokens(char *line, unsigned int line_number);
-void push_func(stack_t **stack, unsigned int line_number);
-void pall_func(stack_t **stack, unsigned int line_number);
-void get_func(char *op, stack_t **stack, unsigned int line_number);
-int is_number(char *s);
-#endif
+/* loop-help.c */
+void cleanup(stack_t **stack);
+int opcode_select(char *opcode, stack_t **stack, unsigned int line_number);
+char *get_line(FILE *file, stack_t *stack);
+void parse_loop(FILE *file);
+
+/* opcodes1.c */
+void atoi_filter(char *str, stack_t **stack, unsigned int line_number);
+void op_push(stack_t **stack, unsigned int line_number);
+void op_pall(stack_t **stack, unsigned int line_number);
+void op_pint(stack_t **stack, unsigned int line_number);
+void op_pop(stack_t **stack, unsigned int line_number);
+
+/* opcodes2.c */
+void op_swap(stack_t **stack, unsigned int line_number);
+void op_add(stack_t **stack, unsigned int line_number);
+void op_nop(stack_t **stack, unsigned int line_number);
+
+/* adv_opcodes1.c */
+void op_sub(stack_t **stack, unsigned int line_number);
+void op_div(stack_t **stack, unsigned int line_number);
+void op_mul(stack_t **stack, unsigned int line_number);
+void op_mod(stack_t **stack, unsigned int line_number);
+
+/* adv_opcodes2.c */
+void op_pchar(stack_t **stack, unsigned int line_number);
+void op_pstr(stack_t **stack, unsigned int line_number);
+void op_rotl(stack_t **stack, unsigned int line_number);
+void op_rotr(stack_t **stack, unsigned int line_number);
+
+/* adv_opcodes3.c */
+void op_stack(stack_t **stack, unsigned int line_number);
+void op_queue(stack_t **stack, unsigned int line_number);
+
+#endif /* MONTY_H */

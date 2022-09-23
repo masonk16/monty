@@ -1,49 +1,33 @@
 #include "monty.h"
 
-int global_var = NULL;
-/**
- * main - opens monty file and reads lines
- * @argc: number of arguments
- * @argv: array of arguments
- *
- * Return: 0 success, 1 failure
- */
+FILE *file_s;
+char *line_buf;
+int is_queue;
 
-int main(int argc, char *argv[])
+/**
+ * main - entry point for "monty," a .m file interpreter
+ * @argc: number of command line arguments
+ * @argv: array of strings containing command line arguments
+ * Return: 0 on success. all failure cases handled with exit()
+ * directly from functions.
+ */
+int main(int argc, char **argv)
 {
-	FILE *fp;
-	ssize_t bytes_read;
-	size_t len = 0;
-	char *line = NULL;
-	char *token = NULL;
-	int line_number = 0;
-	stack_t *head = NULL;
+	file_s = NULL;
 
 	if (argc != 2)
 	{
-		printf("USAGE: monty file\n");
+		fprintf(stderr, "USAGE: monty file\n");
 		exit(EXIT_FAILURE);
 	}
-	else
+
+	file_s = fopen(argv[1], "r");
+	if (!file_s)
 	{
-		fp = fopen(argv[1], "r");
-		if (fp == NULL)
-		{
-			printf("Error: Can't open file %s\n", argv[1]);
-			exit(EXIT_FAILURE);
-		}
-		else
-		{
-			while ((bytes_read = getline(&line, &len, fp)) != -1)
-			{
-				line_number++;
-				token = get_tokens(line, line_number);
-				if (token != NULL)
-					get_func(token, &head, line_number);
-			}
-			free(line);
-			fclose(fp);
-		}
+		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
+		exit(EXIT_FAILURE);
 	}
+
+	parse_loop(file_s);
 	return (0);
 }
